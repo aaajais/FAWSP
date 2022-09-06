@@ -1,0 +1,68 @@
+service: FAWSP
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: us-east-1
+  stage: operation
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+       -  dynamodb:*
+      Resource:
+        -  arn:aws:dynamodb:us-east-1:704614091244:table/CURDOPERATION
+
+
+functions:
+  Add:
+    handler: handler.addUser
+    events:
+      - http:
+          path: /
+          method: post
+          cors: true
+
+  Getuser:
+    handler: get.getUser
+    events:
+      - http:
+          path: /data
+          method: get
+          cors: true
+          
+  updateuser:
+    handler: update.updateUser
+    events:
+      - http:
+          path: /data/{id}
+          method: patch
+          cors: true
+
+  Deleteuser:
+    handler: delete.deleteUser
+    events:
+      - http:
+          path: /data/{id}
+          method: delete
+          cors: true
+
+
+
+resources:
+  Resources:
+      AwsTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+          TableName: CURDOPERATION
+          AttributeDefinitions:
+            - AttributeName: id
+              AttributeType: S
+          KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+
